@@ -1,17 +1,20 @@
 {
-  "running": {
-    "2025-05-03": {},
-    "2025-06-04": true
-  },
-  "reading": {
-    "2025-05-03": {},
-    "2025-05-04": true
-  },
   "gyming": {
     "2025-05-03": {},
     "2025-05-04": "Completed"
   },
-  "gaming": {
-    "2025-05-03": true
+  "running": {
+    "2025-05-10": "Completed"
+  },
+  "cooking": {
+    "2025-05-03": "Completed",
+    "2025-05-04": "Completed",
+    "2025-05-05": "Completed",
+    "2025-05-06": "Completed",
+    "2025-05-07": "Completed",
+    "2025-05-08": "Completed",
+    "2025-05-09": "Completed",
+    "2025-05-10": "Completed",
+    "2025-05-18": "Completed"
   }
 }

@@ -1,6 +1,7 @@
 import json
 from datetime import datetime, timedelta
 import os
+import time
 #from tabulate import tabulate
 
 
@@ -28,11 +29,12 @@ def intialize_json(filepath):
 # ------------------------------------------- #
 
 
-
-
-def add_habit(habit_name, data):
+def add_category(habit_name, data):
     if (habit_name in data):
         print("Habit already exists")
+        return
+    if habit_name == "":
+        print("Enter valid name")
         return
     data[habit_name] = {}
 
@@ -40,13 +42,14 @@ def add_habit(habit_name, data):
     # data[habit_name][date_today] = {} 
     save_data(data, file_path)
     print("Successfully added habit!")
+    time.sleep(3)
     
 
 def complete_habit(habit_name, data):
     if (habit_name not in data):
         print("Error. The task does not exist. Add it first.")
         return
-    
+
     user_date_input = input("Enter the date you completed the task (YYYY-MM-DD): ")
 
     try:
@@ -59,71 +62,80 @@ def complete_habit(habit_name, data):
     data[habit_name][user_date_formatted] = "Completed"
     save_data(data, file_path)
     print("Successfully completed habit!")
+    time.sleep(3)
 
-def remove_habit(habit_name, data):
+def remove_category(habit_name, data):
     if (habit_name not in data):
         print("Habit does not exist")
         return
-    data[habit_name] = 
+    if habit_name == "":
+        print("Enter valid name")
+        return
+    data.pop(habit_name)
 
     save_data(data, file_path)
     print("Successfully removed habit!")
+    time.sleep(3)
 
 def make_summary(data):
 
     summary_choice = str.strip(str.upper((input("Would you like a Day, Week, Month, Year summary (D, W, M, Y)?: "))))
 
     if summary_choice == 'D':
-        return get_last_day(data) # day
+        return get_last(data, 1) # day
     elif summary_choice == 'W':
-        return get_last_x(data, 6) # week
+        return get_last(data, 7) # week
     elif summary_choice == 'M':
-        return get_last_x(data, 29) # month
+        return get_last(data, 30) # month
     elif summary_choice == 'Y':
-        return get_last_x(data, 364) # year
+        return get_last(data, 365) # year
     
     else:
         print("Invalid input. Try again with (D, W, M, Y).")
 
 
-def get_last_day(data):
-    date = datetime.today()
-    date = date.strftime('%Y-%m-%d')
-    print(f"On {date}, you logged: ")
-    for habit in data:
-        if date in data[habit]:
-            print(f"{habit}")
-
-def get_last_x(data, days):
-    for i in range(days, -1, -1):
-        date = datetime.today() - timedelta(days=i)
+def get_last(data, days):
+    if days <= 1:
+        date = datetime.today()
         date = date.strftime('%Y-%m-%d')
         print(f"On {date}, you logged: ")
         for habit in data:
             if date in data[habit]:
                 print(f"{habit}")
+    else: 
+        for i in range(days, -1, -1):
+            date = datetime.today() - timedelta(days=i)
+            date = date.strftime('%Y-%m-%d')
+            print(f"On {date}, you logged: ")
+            for habit in data:
+                if date in data[habit]:
+                    print(f"{habit}")
 
 
 def create_cli(): 
     while(True):
-        print("1. Add new habit")
+        print("1. Add new habit category")
         print("2. Mark habit as done")
-        print("3. Show summary")
-        print("4. Exit")
+        print("3. Remove habit category")
+        print("4. Show summary")
+        print("5. Exit")
 
         user_choice = input("Option: ")
         data = load_data(file_path)
         if user_choice.isnumeric():
             if user_choice == '1': # add habit
                 habit_name = str.strip(str.lower(input("What is the habit name?: "))) 
-                add_habit(str(habit_name), data)
+                add_category(str(habit_name), data)
             elif user_choice == '2': # complete habit
                 habit_name = str.strip(str.lower(input("What is the habit name?: ")))
                 complete_habit(str(habit_name), data)
-            elif user_choice == '3': # summarize
+            elif user_choice == '3': # remove
+                habit_name = str.strip(str.lower(input("What is the habit name?: "))) 
+                remove_category(str(habit_name), data)
+            elif user_choice == '4': # summarize
                 make_summary(data)
-            elif user_choice == '4': # exit
-                break
+            elif user_choice == '5': # exit
+                break 
             else:
                 "Number is out of range of options."
         else:
