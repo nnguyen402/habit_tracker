@@ -1,7 +1,7 @@
 import json
 from datetime import datetime, timedelta
 import os
-#from tabulate import tabulate
+from tabulate import tabulate
 
 
 # 1: Json file methods
@@ -37,8 +37,6 @@ def add_category(habit_name, data):
         return
     data[habit_name] = {}
 
-    # date_today = datetime.today().strftime('%Y-%m-%d') # formats time
-    # data[habit_name][date_today] = {} 
     save_data(data, file_path)
     print("Successfully added habit!")
     
@@ -76,11 +74,11 @@ def remove_category(habit_name, data):
 
 
 def make_summary(data):
-
+    print("WOULD NOT ADVISE GOING PAST 14 DAYS ON SUMMARY AS VISUALIZATION WILL BE MESSY.")
     summary_choice = str.strip(str.upper((input("Would you like a Day, Week, Month, Year summary (D, W, M, Y)? You can also put a number of days to summarize: "))))
 
     if summary_choice == 'D':
-        return get_last(data, 1) # day
+        return get_last(data, 0) # day
     elif summary_choice == 'W':
         return get_last(data, 7) # week
     elif summary_choice == 'M':
@@ -90,31 +88,52 @@ def make_summary(data):
     elif summary_choice.isnumeric():
         return get_last(data, int(summary_choice))
     else:
-        input("Invalid input. Try again with (D, W, M, Y).")
+        print("Invalid input. Try again with (D, W, M, Y).")
         
         
 def get_last(data, days):
-    if days <= 1:
-        date = datetime.today()
-        date = date.strftime('%Y-%m-%d')
-        print(f"On {date}, you logged: ")
-        for habit in data:
+    # code for old summary layout without gridding
+    # if days <= 1:
+    #     date = datetime.today()
+    #     date = date.strftime('%Y-%m-%d')
+    #     print(f"On {date}, you logged: ")
+    #     for habit in data:
+    #         if date in data[habit]:
+    #             print(f"{habit}")
+    # else: 
+    #     for i in range(days, -1, -1):
+    #         date = datetime.today() - timedelta(days=i)
+    #         date = date.strftime('%Y-%m-%d')
+    #         print(f"On {date}, you logged: ")
+    #         for habit in data:
+    #             if date in data[habit]:
+    #                 print(f"{habit}")
+
+    date_list = []
+
+    for i in range(days, -1, -1):
+        date = datetime.today() - timedelta(days=i)
+        date_format = date.strftime('%Y-%m-%d')
+        date_list.append(date_format)
+    
+    headers = ['Habit'] + date_list
+    summary_table = []
+    for habit in data: # where data is the categories
+        row = [habit]
+        for date in date_list:
             if date in data[habit]:
-                print(f"{habit}")
-    else: 
-        for i in range(days, -1, -1):
-            date = datetime.today() - timedelta(days=i)
-            date = date.strftime('%Y-%m-%d')
-            print(f"On {date}, you logged: ")
-            for habit in data:
-                if date in data[habit]:
-                    print(f"{habit}")
+                row.append(" ✔ " if data[habit][date] else " X ")
+            else:
+                row.append(" X ")
+        summary_table.append(row)
+    print(tabulate(summary_table, headers = headers, tablefmt = "fancy_grid", colalign=("left",) + ("center",) * (len(headers) - 1)))
+
 
 
 def create_cli(): 
     while(True):
         print("1. Add new habit category")
-        print("2. Mark habit as done")
+        print("2. Log habit")
         print("3. Remove habit category")
         print("4. Show summary")
         print("5. Exit")
